@@ -1,0 +1,131 @@
+LLM frontend
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>LLM Content Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 25px;
+            background: #eef;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 100px;
+        }
+    </style>
+ 
+    <!-- Marked.js CDN for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>LLM Content Generator</h2>
+        <form id="contentForm">
+            <label for="topic">Topic:</label>
+            <input type="text" id="topic" name="topic" required />
+ 
+            <label for="tone">Tone:</label>
+            <select id="tone" name="tone">
+                <option value="professional">Professional</option>
+                <option value="friendly">Friendly</option>
+                <option value="humorous">Humorous</option>
+                <option value="motivational">Motivational</option>
+            </select>
+ 
+            <label for="length">Length:</label>
+            <select id="length" name="length">
+                <option value="short">Short</option>
+                <option value="medium" selected>Medium</option>
+                <option value="long">Long</option>
+            </select>
+
+
+            <label for="language">Language:</label>
+            <input type="text" id="language" name="language" required />
+ 
+            <button type="submit">Generate</button>
+        </form>
+ 
+        <div id="result"></div>
+    </div>
+ 
+    <script>
+        document.getElementById("contentForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+ 
+            const topic = document.getElementById("topic").value;
+            const tone = document.getElementById("tone").value;
+            const length = document.getElementById("length").value;
+            const language = document.getElementById("language").value;
+ 
+            try {
+                const response = await fetch("http://127.0.0.1:8000/generate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ topic, tone, length, language })
+                });
+ 
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+ 
+                const result = await response.json();
+                const markdownContent = result.generated_content || result.error || "No content returned.";
+                // Render markdown as HTML
+                document.getElementById("result").innerHTML = marked.parse(markdownContent);
+ 
+            } catch (error) {
+                console.error("Fetch error:", error);
+                document.getElementById("result").innerText = "Error contacting the server: " + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
+ 
+ 

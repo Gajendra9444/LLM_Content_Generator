@@ -5,7 +5,7 @@ import google.generativeai as genai
 from fastapi.middleware.cors import CORSMiddleware
 
 
-GEMINI_API_KEY = 'Your_API_Key' # Replace with your actual API key
+GEMINI_API_KEY = 'AIzaSyA--6wJRLvDh4cBCz07xdNusdGLMB4Mr9E' # Replace with your actual API key
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel("gemini-2.0-flash-lite")
 
